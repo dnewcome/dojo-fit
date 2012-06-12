@@ -1,0 +1,13 @@
+<html>
+  <body>
+    {% for session in sessions %}
+		<p>item</p>
+        <div>{{ session.date }}</div> 
+    {% endfor %}
+
+    <form action="/newsession" method="post">
+      <div><input type="submit" value="Create set"></div>
+    </form>
+
+  </body>
+</html>
