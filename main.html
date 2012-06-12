@@ -2,7 +2,7 @@
   <body>
     {% for session in sessions %}
 		<p>item</p>
-        <div>{{ session.date }}</div> 
+        <a href="/session/{{ session.key }}">{{ session.date }}</a> 
     {% endfor %}
 
     <form action="/newsession" method="post">

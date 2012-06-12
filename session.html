@@ -1,0 +1,37 @@
+<html>
+  <head>
+	<link rel="stylesheet" type="text/css" href="css/session.css">
+  </head>
+  <body>
+	<table id="stats">
+
+		<!-- table header -->
+		<tr>
+			<td>user</td>
+			{% for exercise in exercises %}
+				<td>{{ exercise }} </td>
+			{% endfor %}
+		</tr>
+
+		<!-- table rows -->
+		{% for user in users %}
+			<tr><td>{{ user.name }}</td>
+			<!-- this got way too crazy since template engine can't 
+			do indexer lookups on collections -->
+			{% for exercise in exercises %}
+				{% for key, val in user.exercises.iteritems %}
+					{% if exercise == key %}	
+						<td>{{ val }}</td>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+
+    <form action="/newsession" method="post">
+      <div><input type="submit" value="Add set"></div>
+    </form>
+
+  </body>
+</html>

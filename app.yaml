@@ -5,6 +5,9 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /css
+  static_dir: css
+
 - url: .*
   script: dojofit.app
 

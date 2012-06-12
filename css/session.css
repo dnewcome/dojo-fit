@@ -1,0 +1,8 @@
+#stats {
+	border-spacing: 0px;
+	border-collapse: collapse;
+}
+
+#stats td {
+	border: 1px solid black;
+}

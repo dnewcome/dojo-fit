@@ -1,1 +1,1 @@
-../../appcfg.py update dojofit
+../../appcfg.py update . 
