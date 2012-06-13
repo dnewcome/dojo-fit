@@ -15,6 +15,7 @@ from google.appengine.ext.webapp import template
 
 import models
 
+
 """
 application pages
 """
@@ -24,7 +25,7 @@ class MainPage(webapp2.RequestHandler):
   def get(self):
     sessions = models.ExerciseSession.getAllSessions()
     logging.info( sessions.count() )
-    path = os.path.join(os.path.dirname(__file__), 'main.html')
+    path = os.path.join(os.path.dirname(__file__), 'templates/main.html')
     # self.response.out.write(template.render(path, sessions))
     self.response.out.write(template.render(path, { 'sessions': sessions } ))
 
@@ -34,32 +35,37 @@ test calls for development
 ## main page lists active workout sessions
 ## let's use a template here
 class SessionTest(webapp2.RequestHandler):
-  def get(self):
-    session = { 
-		'users': [
-			{'name': 'dan', 'exercises': {'pushups': [20,10,5], 'pullups': [5, 7]} },
-			{'name': 'vikram', 'exercises': {'pushups': [10,10], 'pullups': [5, 7]} },
-			{'name': 'marat', 'exercises': {'pushups': [20,30], 'pullups': [5, 7]} }
-		], 
-		'exercises': ['pullups','pushups']  } 
-    path = os.path.join(os.path.dirname(__file__), 'session.html')
+  def get( self, sid ):
+
+
+    session = models.ExerciseSession.getSingleSessionData( sid )
+    session["sid"] = sid
+
+    path = os.path.join(os.path.dirname(__file__), 'templates/session.html')
     self.response.out.write(template.render(path, session ))
 
 class AddTestSession(webapp2.RequestHandler):
   def get(self):
-    sessiondata = { 
+	sessiondata = { 
 		'users': [
 			{'name': 'dan', 'exercises': {'pushups': [20,10,5], 'pullups': [5, 7]} },
 			{'name': 'vikram', 'exercises': {'pushups': [10,10], 'pullups': [5, 7]} },
 			{'name': 'marat', 'exercises': {'pushups': [20,30], 'pullups': [5, 7]} }
 		], 
 		'exercises': ['pullups','pushups']  } 
-	session = ExerciseSession()
-	session.data = pickle.dump( sessiondata	)
+	session = models.ExerciseSession()
+	session.data = pickle.dumps( sessiondata )
 	session.put()
-	self.response.out.write("done " + session.id() )
+	self.response.out.write( session.key().id() )
 
+class GetTestSession(webapp2.RequestHandler):
+  def get(self, sid):
+	sessiondata = models.ExerciseSession.getSingleSession( sid ).data
+	self.response.out.write( sessiondata )
 
+"""
+pages
+"""
 ## page for displaying the sets of a session
 class SetPage(webapp2.RequestHandler):
   def get( self, sid ):
@@ -88,18 +94,6 @@ class SetPage(webapp2.RequestHandler):
 """
 data mutation methods via http post
 """
-class Guestbook(webapp2.RequestHandler):
-  def post(self):
-    exerciseset = ExerciseSet()
-
-    if users.get_current_user():
-      exerciseset.user = users.get_current_user()
-
-    exerciseset.exercisetype = self.request.get('exercisetype')
-    exerciseset.reps = int( self.request.get('reps') )
-    exerciseset.put()
-    self.redirect('/')
-
 
 class Session(webapp2.RequestHandler):
   def post(self):
@@ -110,6 +104,23 @@ class Session(webapp2.RequestHandler):
     session.put()
     self.redirect('/')
 
+class AddUser(webapp2.RequestHandler):
+  def post(self, sid, user):
+    session = models.ExerciseSession.getSingleSessionData( sid )
+    """
+    if users.get_current_user():
+      session.user = users.get_current_user()
+    """
+
+    session.put()
+    self.redirect('/session/' + sid )
+
+class NewSet(webapp2.RequestHandler):
+  def post(self, sid ):
+    user = self.request.get( 'user' )
+    exercise = self.request.get( 'exercise' )
+    reps = self.request.get( 'reps' )
+    models.ExerciseSession.addSet( sid, user, exercise, reps ) 
 
 """
 application routing and structure
@@ -117,8 +128,9 @@ application routing and structure
 app = webapp2.WSGIApplication([
   ('/', MainPage),
   ('/session/(.*)', SetPage ),
-  ('/sessiontest', SessionTest ),
+  ('/sessiontest/(.*)', SessionTest ),
   ('/addtestsession', AddTestSession ),
-  ('/sign', Guestbook),
-  ('/newsession', Session)
+  ('/gettestsession/(.*)', GetTestSession ),
+  ('/newsession', Session),
+  ('/newset/(.*)', NewSet)
 ], debug=True)

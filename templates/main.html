@@ -1,0 +1,13 @@
+<html>
+  <body>
+    {% for session in sessions %}
+		<p>item</p>
+        <a href="/session/{{ session.key }}">{{ session.date }}</a> 
+    {% endfor %}
+
+    <form action="/newsession" method="post">
+      <div><input type="submit" value="Create set"></div>
+    </form>
+
+  </body>
+</html>

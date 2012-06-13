@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+  <head>
+	<link rel="stylesheet" type="text/css" href="/css/session.css">
+  </head>
+  <body>
+	<table id="stats">
+
+		<!-- table header -->
+		<thead>
+		<tr>
+			<td>user</td>
+			{% for exercise in exercises %}
+				<td>{{ exercise }} </td>
+			{% endfor %}
+		</tr>
+		</thead>
+
+		<!-- table rows -->
+		{% for user in users %}
+			<tr><td>{{ user.name }}</td>
+			<!-- this got way too crazy since template engine can't 
+			do indexer lookups on collections -->
+			{% for exercise in exercises %}
+				{% for key, val in user.exercises.iteritems %}
+					{% if exercise == key %}	
+						<td>{{ val }}</td>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+
+    <form action="/newset/{{sid}}" method="post">
+      <select name="user">
+		{% for user in users %}
+        <option value="{{user.name}}">{{user.name}}</option>
+		{% endfor %}
+      </select>
+      <select name="exercise">
+		{% for exercise in exercises %}
+        <option value="{{exercise}}">{{exercise}}</option>
+		{% endfor %}
+      </select>
+      <input type="text" name="reps">
+      <br>
+      <input type="submit" value="Add set">
+    </form>
+  </body>
+</html>

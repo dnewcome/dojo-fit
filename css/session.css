@@ -1,8 +1,14 @@
 #stats {
+	margin: 10px;
 	border-spacing: 0px;
 	border-collapse: collapse;
 }
 
 #stats td {
 	border: 1px solid black;
+	padding: 10px;
+}
+
+#stats thead {
+	background-color: #6666ff;
 }
