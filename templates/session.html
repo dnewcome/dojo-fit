@@ -22,6 +22,7 @@
 			<!-- this got way too crazy since template engine can't 
 			do indexer lookups on collections -->
 			{% for exercise in exercises %}
+				<!--note the use of iteritems to get key as well as value-->
 				{% for key, val in user.exercises.iteritems %}
 					{% if exercise == key %}	
 						<td>{{ val }}</td>
@@ -44,8 +45,13 @@
 		{% endfor %}
       </select>
       <input type="text" name="reps">
-      <br>
       <input type="submit" value="Add set">
+    </form>
+
+    <form action="/adduser" method="post">
+      <input type="hidden" name="sid" value="{{sid}}">
+      <input type="text" name="user">
+      <input type="submit" value="Add user">
     </form>
   </body>
 </html>

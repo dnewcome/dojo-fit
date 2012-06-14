@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-# hacker dojo fitness application
-#
+'''             
+hacker dojo fitness application
+'''              
 
+import os
 import cgi
 import logging 
-import os
 import datetime
 import webapp2
 import pickle
@@ -13,30 +14,22 @@ import pickle
 from google.appengine.api import users
 from google.appengine.ext.webapp import template 
 
+# our application data model
 import models
-
 
 """
 application pages
 """
 ## main page lists active workout sessions
-## let's use a template here
 class MainPage(webapp2.RequestHandler):
   def get(self):
     sessions = models.ExerciseSession.getAllSessions()
     logging.info( sessions.count() )
     path = os.path.join(os.path.dirname(__file__), 'templates/main.html')
-    # self.response.out.write(template.render(path, sessions))
-    self.response.out.write(template.render(path, { 'sessions': sessions } ))
+    self.response.out.write(template.render(path, {'sessions': sessions}))
 
-"""
-test calls for development 
-"""
-## main page lists active workout sessions
-## let's use a template here
 class SessionTest(webapp2.RequestHandler):
   def get( self, sid ):
-
 
     session = models.ExerciseSession.getSingleSessionData( sid )
     session["sid"] = sid
@@ -44,75 +37,18 @@ class SessionTest(webapp2.RequestHandler):
     path = os.path.join(os.path.dirname(__file__), 'templates/session.html')
     self.response.out.write(template.render(path, session ))
 
-class AddTestSession(webapp2.RequestHandler):
-  def get(self):
-	sessiondata = { 
-		'users': [
-			{'name': 'dan', 'exercises': {'pushups': [20,10,5], 'pullups': [5, 7]} },
-			{'name': 'vikram', 'exercises': {'pushups': [10,10], 'pullups': [5, 7]} },
-			{'name': 'marat', 'exercises': {'pushups': [20,30], 'pullups': [5, 7]} }
-		], 
-		'exercises': ['pullups','pushups']  } 
-	session = models.ExerciseSession()
-	session.data = pickle.dumps( sessiondata )
-	session.put()
-	self.response.out.write( session.key().id() )
-
-class GetTestSession(webapp2.RequestHandler):
-  def get(self, sid):
-	sessiondata = models.ExerciseSession.getSingleSession( sid ).data
-	self.response.out.write( sessiondata )
-
 """
-pages
+data mutation methods post
 """
-## page for displaying the sets of a session
-class SetPage(webapp2.RequestHandler):
-  def get( self, sid ):
-    self.response.out.write('<html><body>')
-
-    sets = models.ExerciseSet.getAllSets()
-
-    for single_set in sets:
-      if greeting.user:
-        self.response.out.write('<b>%s</b> wrote:' % single_set.user.nickname())
-      else:
-        self.response.out.write('An anonymous person wrote:')
-      self.response.out.write('<blockquote>%s %s</blockquote>' %
-                              (single_set.exercisetype, greeting.reps))
-
-    self.response.out.write("""
-          <form action="/sign" method="post">
-            <div><input name="exercisetype"/></div>
-            <div><input name="reps"/></div>
-            <div><input type="submit" value="Sign Guestbook"></div>
-          </form>
-        </body>
-      </html>""")
-
-
-"""
-data mutation methods via http post
-"""
-
-class Session(webapp2.RequestHandler):
-  def post(self):
-    session = ExerciseSession()
-    if users.get_current_user():
-      session.user = users.get_current_user()
-
-    session.put()
-    self.redirect('/')
-
 class AddUser(webapp2.RequestHandler):
-  def post(self, sid, user):
+  def post(self):
+    sid = self.request.get( 'sid' )
+    user = self.request.get( 'user' )
     session = models.ExerciseSession.getSingleSessionData( sid )
-    """
-    if users.get_current_user():
-      session.user = users.get_current_user()
-    """
-
-    session.put()
+    session['users'].append( 
+      { 'exercises': {'pushups':[], 'pullups':[]}, 'name': user }
+    )
+    models.ExerciseSession.setSingleSessionData( sid, session )
     self.redirect('/session/' + sid )
 
 class NewSet(webapp2.RequestHandler):
@@ -121,16 +57,27 @@ class NewSet(webapp2.RequestHandler):
     exercise = self.request.get( 'exercise' )
     reps = self.request.get( 'reps' )
     models.ExerciseSession.addSet( sid, user, exercise, reps ) 
+    self.redirect('/session/' + sid )
+
+class NewSession(webapp2.RequestHandler):
+  def post(self):
+	sessiondata = { 
+		'users': [], 
+		'exercises': ['pullups','pushups']  
+	} 
+	session = models.ExerciseSession()
+	session.data = pickle.dumps( sessiondata )
+	session.put()
+	sid = session.key().id()
+	self.redirect('/session/' + str(sid) )
 
 """
 application routing and structure
 """
 app = webapp2.WSGIApplication([
   ('/', MainPage),
-  ('/session/(.*)', SetPage ),
-  ('/sessiontest/(.*)', SessionTest ),
-  ('/addtestsession', AddTestSession ),
-  ('/gettestsession/(.*)', GetTestSession ),
-  ('/newsession', Session),
+  ('/session/(.*)', SessionTest ),
+  ('/newsession', NewSession),
+  ('/adduser', AddUser),
   ('/newset/(.*)', NewSet)
 ], debug=True)
