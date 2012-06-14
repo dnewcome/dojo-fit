@@ -9,7 +9,7 @@ to be appified somehow.
 
 Grab the Google App Engine SDK for Python from here:
 
-    [https://developers.google.com/appengine/downloads](https://developers.google.com/appengine/downloads)
+[https://developers.google.com/appengine/downloads](https://developers.google.com/appengine/downloads)
 
 Assuming the SDK is in your path, run the development server using 
 
