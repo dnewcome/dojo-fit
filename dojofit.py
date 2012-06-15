@@ -72,6 +72,11 @@ class NewSession(webapp2.RequestHandler):
 	sid = session.key().id()
 	self.redirect('/session/' + str(sid) )
 
+class CloseSession(webapp2.RequestHandler):
+  def post(self, sid):
+    models.ExerciseSession.closeSession( sid )
+    self.redirect('/session/' + str(sid) )
+
 """
 application routing and structure
 """
@@ -79,6 +84,7 @@ app = webapp2.WSGIApplication([
   ('/', MainPage),
   ('/session/(.*)', SessionTest ),
   ('/newsession', NewSession),
+  ('/closesession/(.*)', CloseSession),
   ('/adduser', AddUser),
   ('/newset/(.*)', NewSet)
 ], debug=True)

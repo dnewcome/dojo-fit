@@ -21,7 +21,8 @@ session = {
 		{'name': 'vikram', 'exercises': {'pushups': [10,10], 'pullups': [5, 7]} },
 		{'name': 'marat', 'exercises': {'pushups': [20,30], 'pullups': [5, 7]} }
 	], 
-	'exercises': ['pullups','pushups']  
+	'exercises': ['pullups','pushups'],
+	'open': true
 } 
  
 Note that we store the exercise names redundantly for convenience. We might want
@@ -40,6 +41,12 @@ class ExerciseSession(db.Model):
     # must cast explicitly to str here, unpickle fails otw
     return pickle.loads( str(ExerciseSession.getSingleSession( sid ).data) )
 
+  @staticmethod
+  def closeSession( sid ):
+    data = ExerciseSession.getSingleSessionData( sid )
+    data['open'] = False
+    ExerciseSession.setSingleSessionData( sid, data )
+
   ''' update the data blob for a session '''
   @staticmethod
   def setSingleSessionData( sid, data ):
@@ -50,7 +57,6 @@ class ExerciseSession(db.Model):
   ''' fetch gql model for a session '''
   @staticmethod
   def getSingleSession( sid ):
-    # return db.GqlQuery("SELECT * FROM ExerciseSession" )
 	return ExerciseSession.get_by_id( int(sid) )
 
   ''' fetch list of models for all sessions '''

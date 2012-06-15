@@ -38,6 +38,7 @@
 		{% endfor %}
 	</table>
 
+	{% if open == True %}	
     <form action="/newset/{{sid}}" method="post">
       <select name="user">
 		{% for user in users %}
@@ -62,9 +63,9 @@
       <input type="text" name="user">
       <input type="submit" value="Add user">
     </form>
-    <form action="/closesession" method="post">
-      <input type="hidden" name="sid" value="{{sid}}">
+    <form action="/closesession/{{sid}}" method="post">
       <input type="submit" value="Close Session">
     </form>
+	{% endif %}
   </body>
 </html>
