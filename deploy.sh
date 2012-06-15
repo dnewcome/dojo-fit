@@ -1,1 +1,1 @@
-../../appcfg.py update . 
+appcfg.py update . 

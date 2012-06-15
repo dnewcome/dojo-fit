@@ -1,7 +1,12 @@
 <!doctype html>
 <html>
   <head>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
 	<link rel="stylesheet" type="text/css" href="/css/session.css">
+
+	<link rel="stylesheet" href="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.css" />
+	<script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
+	<script src="http://code.jquery.com/mobile/1.1.0/jquery.mobile-1.1.0.min.js"></script>
   </head>
   <body>
 	<table id="stats">
@@ -44,7 +49,11 @@
         <option value="{{exercise}}">{{exercise}}</option>
 		{% endfor %}
       </select>
-      <input type="text" name="reps">
+      <select name="exercise">
+		{% for repnum in reprange %}
+        <option value="{{repnum}}">{{repnum}}</option>
+		{% endfor %}
+      </select>
       <input type="submit" value="Add set">
     </form>
 
@@ -52,6 +61,10 @@
       <input type="hidden" name="sid" value="{{sid}}">
       <input type="text" name="user">
       <input type="submit" value="Add user">
+    </form>
+    <form action="/closesession" method="post">
+      <input type="hidden" name="sid" value="{{sid}}">
+      <input type="submit" value="Close Session">
     </form>
   </body>
 </html>

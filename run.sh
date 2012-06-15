@@ -1,1 +1,1 @@
-../../dev_appserver.py .
+dev_appserver.py .

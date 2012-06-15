@@ -33,6 +33,7 @@ class SessionTest(webapp2.RequestHandler):
 
     session = models.ExerciseSession.getSingleSessionData( sid )
     session["sid"] = sid
+    session["reprange"] = range(101) 
 
     path = os.path.join(os.path.dirname(__file__), 'templates/session.html')
     self.response.out.write(template.render(path, session ))
