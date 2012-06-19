@@ -5,10 +5,13 @@ api_version: 1
 threadsafe: yes
 
 handlers:
+- url: /service/.*
+  script: webservice.service
+
 - url: /css
   static_dir: css
 
-- url: .*
+- url: /.*
   script: dojofit.app
 
 libraries:

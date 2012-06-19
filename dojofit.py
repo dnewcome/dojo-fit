@@ -88,3 +88,4 @@ app = webapp2.WSGIApplication([
   ('/adduser', AddUser),
   ('/newset/(.*)', NewSet)
 ], debug=True)
+
