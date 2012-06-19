@@ -2,6 +2,8 @@ import webapp2
 import models
 import pickle
 
+import simplejson
+
 """
 data mutation methods post
 """
@@ -34,16 +36,22 @@ class NewSession(webapp2.RequestHandler):
 	session.data = pickle.dumps( sessiondata )
 	session.put()
 	sid = session.key().id()
-	self.redirect('/session/' + str(sid) )
+	self.response.out.write( str(sid) )
 
 class CloseSession(webapp2.RequestHandler):
   def post(self, sid):
     models.ExerciseSession.closeSession( sid )
     self.redirect('/session/' + str(sid) )
 
+class GetSession(webapp2.RequestHandler):
+	def get(self, sid):
+		session = models.ExerciseSession.getSingleSessionData( sid )
+		self.response.out.write( simplejson.dumps( session ) )
+
 prefix = '/service'
 service = webapp2.WSGIApplication([
   (prefix + '/newsession', NewSession),
+  (prefix + '/session/(.*)', GetSession),
   (prefix + '/closesession/(.*)', CloseSession),
   (prefix + '/adduser', AddUser),
   (prefix + '/newset/(.*)', NewSet)
