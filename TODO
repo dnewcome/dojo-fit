@@ -1,0 +1,3 @@
+I think instead of implementing statefulness in the app it would be better 
+to just allow easy selection of what you want to enter, also
+allow entering comma delimited data.
