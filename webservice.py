@@ -2,7 +2,7 @@ import webapp2
 import models
 import pickle
 
-import simplejson
+import json as simplejson
 
 """
 data mutation methods post
